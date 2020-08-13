@@ -1,0 +1,11 @@
+[
+  {
+    "voiceSearchQuery" : "play spotify",
+    "catalogue" : "premium",
+    "country" : "US",
+    "locale" : "en",
+    "languageRequested" : "en",
+    "entityType" : "ALBUM",
+    "time" : "2020-05-09T00:21:25.848Z"
+  }
+]
