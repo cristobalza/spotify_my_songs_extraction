@@ -28,29 +28,20 @@ def run():
     print(f'Extracted {len(songs)} unique songs.')
     
     
-    # songs_ids = my_songs_tool.get_saved_ids(songs)
-    
     # Step 3: Map the songs to their respective id in a dictioary.
     songs_ids = {track: None for track in songs}
-    connect_to_my_spotify.map_song_id(songs_ids, token)
-    print(songs_ids)
+    songs_ids = connect_to_my_spotify.map_song_id(songs_ids, token)
 
-    #recovering saved features
-    # song_features = my_songs_tool.get_saved_features(songs)
-    # songs_without_features = [track for track in songs if song_features.get(track) is None]
-    # songs_with_features = [track for track in songs if song_features.get(track) is not None]
-    # print(f"There are still {len(songs_without_features)} songs without features.")
-    # print(f"There are {len(songs_with_features)} songs WITH features")
-
-    # Step :features collection ####
+    # Step 4: Map the songs with their respective features by usig their ids####
+    # Note for the reader: Using the id is the most effective way to extract the Spotify's features of each song.
     song_features = {track: None for track in songs}
-    features_df = connect_to_my_spotify.collect_2(songs_ids, token, song_features, songs )
+    features_df = connect_to_my_spotify.map_song_feature(songs_ids, token, song_features, songs )
     print(features_df.head())
-    print(f"The shape of the dataframe {features_df.shape}")
+    print(f"The shape of the features dataframe {features_df.shape}")
 
-    # #joining features and streamings
+    # Step 5: Join the streaming and features together
     print('Adding features to streamings...')
-    my_songs_tool.collect_3(streamings, song_features)
+    my_songs_tool.join_streamings_with_song_features(streamings, song_features)
 
     
 if __name__ == '__main__':

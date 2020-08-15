@@ -54,38 +54,33 @@ def get_api_id(track_name, token, artist= None):
         return None
 
 
-def map_song_id(track_ids, token):
+def map_song_id(songs_ids, token):
 
     #using spotify API to recover track ids
     #note: this methods works only for tracks. 
     #podcasts and other items will be ignored.
     print('Connecting to Spotify to recover tracks IDs.')
     # sleep(3)
-    for track, idd in track_ids.items(): 
+    for track, idd in songs_ids.items(): 
         if idd is None: 
             try:
                 found_idd = get_api_id(track, token)
-                track_ids[track] = found_idd
+                songs_ids[track] = found_idd
                 print(track, found_idd)
             except:
                 pass
     
     #how many tracks did we identify? 
-    identified_tracks = [track for track in track_ids if track_ids[track] is not None]
+    identified_tracks = [track for track in songs_ids if songs_ids[track] is not None]
     print(f'Successfully recovered the ID of {len(identified_tracks)} tracks.')
     
     #how many items did we fail to identify? 
-    n_tracks_without_id = len(track_ids) - len(identified_tracks)
+    n_tracks_without_id = len(songs_ids) - len(identified_tracks)
     print(f"Failed to identify {n_tracks_without_id} items. "
             "However, some of these may not be tracks (e.g. podcasts).")
-    
-    #using pandas to save tracks ids (so we don't have to API them in the future)
-    ids_path = 'output/track_ids.csv'
-    ids_dataframe = pd.DataFrame.from_dict(track_ids, orient = 'index')
-    ids_dataframe.to_csv(ids_path)
-    print(f'track ids saved to {ids_path}.')
+    return songs_ids
 
-def collect_2(track_ids, token, track_features, tracks):
+def map_song_feature(track_ids, token, track_features, tracks):
     print('Connecting to Spotify to extract features...')
     acquired = 0
     for track, idd in track_ids.items(): 
@@ -105,5 +100,5 @@ def collect_2(track_ids, token, track_features, tracks):
     
     #saving features 
     features_df = pd.DataFrame(track_features).T
-    features_df.to_csv('output/features.csv')
+    # features_df.to_csv('output/features.csv')
     return features_df
