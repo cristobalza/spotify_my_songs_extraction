@@ -1,20 +1,10 @@
 import ast
 import requests
 from datetime import datetime
-import spotipy
-import spotipy.util as util
 from os import listdir
-from time import sleep
 import pandas as pd
 
-def get_authorization(user, 
-              client_id,
-              client_secret,
-              redirect_uri,
-              scope):
-  
-    token = util.prompt_for_user_token(username = user,scope=None,client_id=client_id,client_secret=client_secret,redirect_uri=redirect_uri)
-    return token
+
 
 def get_streamings(path='data/'):
     '''
@@ -40,70 +30,64 @@ def get_streamings(path='data/'):
 
 ######################
 
-def get_saved_ids(tracks, path = 'output/track_ids.csv'):
-    track_ids = {track: None for track in tracks}
-    folder, filename = path.split('/')
-    if filename in listdir(folder):
+def get_saved_ids(songs, path = 'output/track_ids.csv'):
+    """
+    Returns a dictionary. If the file has been created before you 
+    """
+    # Create empty dictionary 
+    song_ids = {track: None for track in songs}
+    # Split the output directory and the respective file
+    directory, file_name = path.split('/')
+    # Iterate through the files in the output directory
+    if file_name in listdir(directory):
         try:
-            idd_dataframe = pd.read_csv('output/track_ids.csv', names = ['name', 'idd'])
-            idd_dataframe = idd_dataframe[1:]                    #removing first row
-            added_tracks = 0
-            for index, row in idd_dataframe.iterrows():
-                if not row[1] == 'nan':                          #if the id is not nan
-                    track_ids[row[0]] = row[1]                    #add the id to the dict
-                    added_tracks += 1
-            print(f'Saved IDs successfully recovered for {added_tracks} tracks.')
+            # Create dataframe of songs and ids
+            song_ids_df = pd.read_csv('output/track_ids.csv', names = ['name', 'idd'])
+            # Removes the first row of df
+            song_ids_df = song_ids_df[1:]   
+            # Create count variable                 
+            count_songs = 0
+            # Iterate through each songs
+            for _ , row in song_ids_df.iterrows():
+                if row[1] != 'nan':                         
+                    song_ids[row[0]] = row[1]                  
+                    count_songs += 1
+            print(f'Saved IDs successfully recovered for {count_songs} tracks.')
         except:
             print('Error. Failed to recover saved IDs!')
             pass
-    return track_ids
+    return song_ids
 
-def get_saved_features(tracks, path = 'output/features.csv'):
-    folder, file = path.split('/')
-    track_features = {track:None for track in tracks}
-    if file in listdir(folder):
+def get_saved_features(songs, path = 'output/features.csv'):
+    directory, file_name = path.split('/')
+    song_features = {s:None for s in songs}
+    if file_name in listdir(directory):
         features_df = pd.read_csv(path, index_col = 0)
-        n_recovered_tracks = 0
-        for track in features_df.index:
-            features = features_df.loc[track, :]
-            if not features.isna().sum():          #if all the features are there
-                track_features[track] = dict(features)
-                n_recovered_tracks += 1
-        print(f"Added features for {n_recovered_tracks} tracks.")
-        return track_features
+        count_songs = 0
+        for song in features_df.index:
+            features = features_df.loc[song, :]
+            if not features.isna().sum():         
+                song_features[song] = dict(features)
+                count_songs += 1
+        print(f"Added features for {count_songs} tracks.")
+        return song_features
     else:
         print("Did not find features file.")
-        return track_features
+        return song_features
 
-######################
-def get_api_id(track_name, token, artist= None):
-    
-    '''Performs a query on Spotify API to get a track ID.
-    '''
-   
-    headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'Authorization': f'Bearer ' + token,
-    }
-    
-    params = [
-    ('q', track_name),
-    ('type', 'track'),
-    ]
-    
-    if artist: 
-        params.append(('artist', artist))
-        
-    try:
-        response = requests.get('https://api.spotify.com/v1/search', headers = headers, params = params, timeout = 5)
-        json = response.json()
-        first_result = json['tracks']['items'][0]
-        track_id = first_result['id']
-        return track_id
-    except:
-        return None
-
+def collect_3(streamings, track_features):
+    streamings_with_features = []
+    for streaming in streamings:
+        track = streaming['trackName']
+        features = track_features[track]
+        if features:
+            streamings_with_features.append({'name': track, **streaming, **features})
+    print(f'Added features to {len(streamings_with_features)} streamings.')
+    print('Saving streamings...')
+    df_final = pd.DataFrame(streamings_with_features)
+    df_final.to_csv('output/final.csv')
+    perc_featured = round(len(streamings_with_features) / len(streamings) *100, 2)
+    print(f"Done! Percentage of streamings with features: {perc_featured}%.") 
 
 
     

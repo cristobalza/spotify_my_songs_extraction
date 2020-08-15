@@ -1,9 +1,13 @@
-
 import my_songs_tool
-import connect_to_spotify
+import connect_to_my_spotify
 from your_data import *
 import pandas as pd
 from time import sleep
+
+
+def summary(summary_steamings):
+    return summary_steamings
+
 
 
 def run():
@@ -12,34 +16,41 @@ def run():
     the Spotify's features.
     """
     # Step 1: Get Authorization
-     #recover streamings history
-    token = my_songs_tool.get_authorization(username, client_id, 
-                              client_secret, redirect_uri, scope)
+    token = connect_to_my_spotify.get_authorization(username, client_id, client_secret, redirect_uri, scope)
     
+    # Step 2: Parse the JSON files to obtain the data from each StreamingHistory.json file
     streamings = my_songs_tool.get_streamings()
-    print(f'Recovered {len(streamings)} streamings.')
+    print(f"Number of streamings recovered from extraction: {len(streamings)} streamings.")
 
+    # Step 2: From the streaming history, obtain the number of unique songs. ONLY songs.
+    # Why? - Use the unique list to map their respective IDs.
+    songs = set([streaming['trackName'] for streaming in streamings])
+    print(f'Extracted {len(songs)} unique songs.')
     
-    #getting a list of unique tracks in our history
-    tracks = set([streaming['trackName'] for streaming in streamings])
-    print(f'Discovered {len(tracks)} unique tracks.')
     
-    #getting saved ids for tracks
-    track_ids = my_songs_tool.get_saved_ids(tracks)
+    # songs_ids = my_songs_tool.get_saved_ids(songs)
     
-    # Step  : Collect IDs
-    # my_songs_tool.collect_1(track_ids, token)
+    # Step 3: Map the songs to their respective id in a dictioary.
+    songs_ids = {track: None for track in songs}
+    connect_to_my_spotify.map_song_id(songs_ids, token)
+    print(songs_ids)
 
     #recovering saved features
-    track_features = my_songs_tool.get_saved_features(tracks)
-    tracks_without_features = [track for track in tracks if track_features.get(track) is None]
-    tracks_with_features = [track for track in tracks if track_features.get(track) is not None]
-    print(f"There are still {len(tracks_without_features)} tracks without features.")
-    print(f"There are {len(tracks_with_features)} tracks WITH features")
+    # song_features = my_songs_tool.get_saved_features(songs)
+    # songs_without_features = [track for track in songs if song_features.get(track) is None]
+    # songs_with_features = [track for track in songs if song_features.get(track) is not None]
+    # print(f"There are still {len(songs_without_features)} songs without features.")
+    # print(f"There are {len(songs_with_features)} songs WITH features")
 
-    # Step :features collection
-    # features_df = connect_to_spotify.collect_2(track_ids, token, track_features, tracks )
-    # print(features_df.head())
+    # Step :features collection ####
+    song_features = {track: None for track in songs}
+    features_df = connect_to_my_spotify.collect_2(songs_ids, token, song_features, songs )
+    print(features_df.head())
+    print(f"The shape of the dataframe {features_df.shape}")
+
+    # #joining features and streamings
+    print('Adding features to streamings...')
+    my_songs_tool.collect_3(streamings, song_features)
 
     
 if __name__ == '__main__':
