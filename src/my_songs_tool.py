@@ -40,7 +40,7 @@ def join_streamings_with_song_features(streamings, track_features):
     print(f'Added features to {len(streamings_with_features)} streamings.')
     print('Saving streamings...')
     df_final = pd.DataFrame(streamings_with_features)
-    df_final.to_csv('output/final.csv')
+    df_final.to_csv('output/cristobal_streaming_history_with_features.csv')
     perc_featured = round(len(streamings_with_features) / len(streamings) *100, 2)
     print(f"Done! Percentage of streamings with features: {perc_featured}%.") 
 
