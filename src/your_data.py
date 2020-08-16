@@ -1,4 +1,5 @@
-username = 'cabechota'
-
+username = 'your username'
+client_id ='check your Spotify app in https://developer.spotify.com/dashboard/login'
+client_secret = 'check your Spotify app in https://developer.spotify.com/dashboard/login'
 redirect_uri = 'http://localhost/'
 scope = 'user-read-recently-played'

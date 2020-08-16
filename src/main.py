@@ -1,19 +1,11 @@
 import my_songs_tool
 import connect_to_my_spotify
 from your_data import *
-import pandas as pd
-from time import sleep
-
-
-def summary(summary_steamings):
-    return summary_steamings
-
-
 
 def run():
     """
     Run this function and all the will extract all the music from the JSON files and add
-    the Spotify's features.
+    the Spotify's features by connecting to the platform's API.
     """
     # Step 1: Get Authorization
     token = connect_to_my_spotify.get_authorization(username, client_id, client_secret, redirect_uri, scope)
@@ -27,17 +19,15 @@ def run():
     songs = set([streaming['trackName'] for streaming in streamings])
     print(f'Extracted {len(songs)} unique songs.')
     
-    
     # Step 3: Map the songs to their respective id in a dictioary.
+    # Creates an empty dictionary of each song of the streaming history with a None value.
     songs_ids = {track: None for track in songs}
     songs_ids = connect_to_my_spotify.map_song_id(songs_ids, token)
 
     # Step 4: Map the songs with their respective features by usig their ids####
     # Note for the reader: Using the id is the most effective way to extract the Spotify's features of each song.
     song_features = {track: None for track in songs}
-    features_df = connect_to_my_spotify.map_song_feature(songs_ids, token, song_features, songs )
-    print(features_df.head())
-    print(f"The shape of the features dataframe {features_df.shape}")
+    song_features = connect_to_my_spotify.map_song_feature(songs_ids, token, song_features, songs )
 
     # Step 5: Join the streaming and features together
     print('Adding features to streamings...')
