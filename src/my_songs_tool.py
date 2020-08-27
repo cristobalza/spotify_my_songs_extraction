@@ -30,10 +30,13 @@ def join_streamings_with_song_features(streamings, song_features):
     """
     Final step to put together the streaming history and their respective songs IDs and Spotifys's features.
     Then function proceeds to save the file in the ./output/ directory 
-    Returns nothing
+    Returns None
 
-    streamings: Streaming history list from the JSON files.
-    song_features: Dictionary of songs and their respective IDs and features.
+    Parameters
+    ----------
+
+    streamings    : Streaming history list from the JSON files.
+    song_features : Dictionary of songs and their respective IDs and features.
     """
     streamings_with_features = []
     for streaming in streamings:

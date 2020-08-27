@@ -19,8 +19,11 @@ def get_api_features(song_id, token):
     Creates a Spotify API client using the token.
     Returns audio features for one song using the ID as access key.
 
-    song_id: the ID of a particular song
-    token: authorization to access the Spotify's API
+    Parameters
+    ----------
+
+    song_id : the ID of a particular song
+    token   : authorization to access the Spotify's API
     """
     sp = spotipy.Spotify(auth=token)
     try:
@@ -32,9 +35,12 @@ def get_api_features(song_id, token):
 def get_api_id(song_name, token):
     """
     Returns the ID of a song
-
-    song_name: Name of the song of interest
-    token: authorization to access the Spotify's API
+    
+    Parameters
+    ----------
+    
+    song_name : Name of the song of interest
+    token     : authorization to access the Spotify's API
     """ 
     params = [('q', song_name),('type', 'track'),]
     try:
@@ -55,9 +61,12 @@ def get_api_id(song_name, token):
 def map_song_id(songs_ids, token):
     """
     Returns a mapping of each song of the streaming list to their respective Spotify ID.
-
-    songs_ids: dictionary of each song with a None value. This function fills the empty values.
-    token: authorization to access the Spotify's API
+    
+    Parameters
+    ----------
+    
+    songs_ids : dictionary of each song with a None value. This function fills the empty values.
+    token     : authorization to access the Spotify's API
     """
     print('Connecting to Spotify to recover tracks IDs.')
     for curr_song, id_api in songs_ids.items(): 
@@ -85,10 +94,13 @@ def map_song_feature(songs_ids, token, song_features, songs_list):
 
     Note for the reader: This is NOT the streaming history processing.
 
-    songs_ids: Dictionary of Song Names and their IDs
-    token: Key authorization
-    song_features: Dictionary of song and their features
-    songs_list: List of songs
+    Parameters
+    ----------
+
+    songs_ids     : Dictionary of Song Names and their IDs
+    token         : Key authorization
+    song_features : Dictionary of song and their features
+    songs_list    : List of songs
     """
     print('Connecting to Spotify to extract features...')
     number = 0
