@@ -11,7 +11,11 @@ def get_authorization(user, client_id, client_secret, redirect_uri, scope):
 
     All parameters come from your_data.py, where you are supposed to input your personal Spotify information.
     """
-    token = util.prompt_for_user_token(username = user,scope=None,client_id=client_id,client_secret=client_secret,redirect_uri=redirect_uri)
+    token = util.prompt_for_user_token(username = user,scope=None,
+                                        client_id=client_id,
+                                        client_secret=client_secret,
+                                        redirect_uri=redirect_uri
+                                        )
     return token
 
 def get_api_features(song_id, token):
